@@ -1,30 +1,38 @@
 import requests
 from bs4 import BeautifulSoup
 import re  # Import regex module for cleaning price strings
-
+import json
 
 def scrape_price(urls):
   prices = []
   try:
     for url_data in urls:
-      url = url_data[0]
-      tag_name = url_data[1]
-      attributes = url_data[2]
+      shop_name = url_data[0]  # Name of the shop
+      url = url_data[1]  # Product URL
+      tag_name = url_data[2]  # HTML tag
+      attributes = url_data[3]  # Tag attributes
+
       # Send an HTTP request to the URL
       response = requests.get(url)
       response.raise_for_status()  # Check if the request was successful
 
       # Parse the HTML content of the page
       soup = BeautifulSoup(response.text, 'html.parser')
-
-      # Find the HTML element that contains the price
-      price_element = soup.find(tag_name, attributes)  # Price element with id="tprice"
+      price_element = soup.find(tag_name, attributes)
 
       if price_element:
-        # Extract the price text and clean it to remove non-numerical characters
-        price_text = price_element.get_text(strip=True)
-        price_numeric = float(re.sub(r'[^\d.,]', '', price_text).replace(',', '.'))  # Convert to float
-        prices.append(price_numeric)
+        # Find the HTML element that contains the price
+        if tag_name == 'script':
+          # Parse the JSON data inside the script tag
+          json_data = json.loads(price_element.string)
+          # Access the price within the JSON structure
+          price_numeric = float(json_data['offers']['price'])
+        else:
+          price_text = price_element.get_text(strip=True)
+          price_numeric = float(re.sub(r'[^\d.,]', '', price_text).replace(',', '.'))  # Convert to float
+
+        # Append the shop name and price as a tuple
+        prices.append((shop_name, price_numeric))
       else:
         return "Price could not be found."
   except requests.exceptions.RequestException as e:
@@ -32,24 +40,37 @@ def scrape_price(urls):
   except Exception as e:
     return f"An error occurred: {e}"
 
-  # Sort the prices in ascending order
-  prices.sort()
+  # Sort the prices in ascending order by price (2nd element in the tuple)
+  prices.sort(key=lambda x: x[1])
   return prices
 
 
-urls_x9 = [['https://www.gigasport.at/atomic-pistenski-set-redster-x9s-revoshock-s-x-12-gw-tuerkis-7582846.html',
-            'span',
-            {'id': 'tprice'}],
-           ['https://www.sport-robl.at/de/ski-sets/atomic/atomic-redster-x9s-revoshock-s-laengenwahl-atomic-x-12-gw-mod-2023-2024.html',
-            'span',
-            {'itemprop': 'price'}]]
+# Updated input list with shop names
+urls_x9 = [
+  ['Gigasport',
+   'https://www.gigasport.at/atomic-pistenski-set-redster-x9s-revoshock-s-x-12-gw-tuerkis-7582846.html',
+   'span',
+   {'id': 'tprice'}],
+  ['Sport Robl',
+   'https://www.sport-robl.at/de/ski-sets/atomic/atomic-redster-x9s-revoshock-s-laengenwahl-atomic-x-12-gw-mod-2023-2024.html',
+   'span',
+   {'itemprop': 'price'}],
+  ['Intersport',
+   'https://www.intersport.at/p/atomic-redster-x9s-revoshock-s-race-alpinski-iat.atomic.aass03266.000.html',
+   'script',
+   {'id': 'schema-org-pdp', 'type': 'application/ld+json'}],
+]
 
 # Fetch prices
 prices = scrape_price(urls_x9)
 
 if isinstance(prices, list):
-  print('Atomic X9 prices:')
-  for price in prices:
-    print(f"€ {price:.2f}")
+  # Calculate the maximum length of shop names for padding
+  max_shop_name_length = max(len(shop) for shop, _ in prices)
+
+  print('##### Atomic X9 #####')
+  for shop, price in prices:
+    # Format output with dynamic padding based on shop name length
+    print(f"{shop:<{max_shop_name_length}}: € {price:.2f}")
 else:
   print(prices)
