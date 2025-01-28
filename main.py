@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import re  # Import regex module for cleaning price strings
 import json
 
+
 def scrape_price(urls):
   prices = []
   try:
@@ -59,6 +60,18 @@ urls_x9 = [
    'https://www.intersport.at/p/atomic-redster-x9s-revoshock-s-race-alpinski-iat.atomic.aass03266.000.html',
    'script',
    {'id': 'schema-org-pdp', 'type': 'application/ld+json'}],
+  ['Sport Bittl',
+   'https://www.sport-bittl.com/de/alpin-ski-vormontiert/?part=186&action=asp&pid=46-186-224138',
+   'div',
+   {'class': 'set-configurator-widget__infos__price--current'}],
+  ['Sport Ueberbacher',
+   'https://www.sport-ueberbacher.at/redster_x9s_revoshock_s_x_12_gw_2024_25-3616.htm',
+   'span',
+   {'class': 'price_ausgabe'}],
+['Hervis',
+   'https://www.hervis.at/shop/Ausr%C3%BCstung/Ski/Ski-Alpin/Carvingski-Erwachsene/Atomic/REDSTER-X9S-REVOSHOCK-S-%2B-X-12-GW/p/COLOR-3298152',
+   'span',
+   {'class': 'price_ausgabe'}]
 ]
 
 # Fetch prices
