@@ -14,6 +14,7 @@ import time
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 
+
 def scrape_hervis_price(url):
     """Fetch price from Hervis using Selenium (since it blocks requests)"""
     try:
@@ -34,13 +35,14 @@ def scrape_hervis_price(url):
         full_price = float(f"{euros}{cents}".replace(',', '.'))
         # Calculate loading time
         load_time = time.time() - start_time
-        print(f"Price of the ski: € {full_price:.2f}")
-        print(f"Page loaded in {load_time:.2f} seconds")
+        # print(f"Price of the ski: € {full_price:.2f}")
+        # print(f"Page loaded in {load_time:.2f} seconds")
         driver.quit()
         return full_price
     except Exception as e:
         driver.quit()
         return f"Error fetching Hervis price: {e}"
+
 
 def scrape_price(urls):
     """Fetch prices from multiple websites using BeautifulSoup & Selenium for Hervis"""
@@ -66,14 +68,28 @@ def scrape_price(urls):
             response.raise_for_status()
 
             soup = BeautifulSoup(response.text, 'html.parser')
-            price_element = soup.find(tag_name, attributes)
+            # price_element = soup.find(tag_name, attributes)
+            price_element = soup.find_all(tag_name, attributes)
 
             if price_element:
+                price_numeric = None
                 if tag_name == 'script':
-                    json_data = json.loads(price_element.string)
-                    price_numeric = float(json_data['offers']['price'])
+                    for script_tag in price_element:
+                        try:
+                            # Parse the JSON data from the script tag
+                            json_data = json.loads(script_tag.string)
+                            # Check if the JSON contains product offers and price
+                            if 'offers' in json_data and 'price' in json_data['offers']:
+                                price_numeric = float(json_data['offers']['price'])
+                                break  # Stop once we find the price
+                        except json.JSONDecodeError:
+                            continue  # Skip if there is any issue with parsing the JSON
+
+                    # json_data = json.loads(price_element.string)
+                    # print('json_data\n', json_data)
+                    # price_numeric = float(json_data['offers']['price'])
                 else:
-                    price_text = price_element.get_text(strip=True)
+                    price_text = price_element[0].get_text(strip=True)
                     price_numeric = float(re.sub(r'[^\d.,]', '', price_text).replace(',', '.'))
 
                 prices.append((shop_name, price_numeric))
@@ -114,7 +130,11 @@ urls_x9 = [
     ['Hervis',
      'https://www.hervis.at/shop/Ausr%C3%BCstung/Ski/Ski-Alpin/Carvingski-Erwachsene/Atomic/REDSTER-X9S-REVOSHOCK-S-%2B-X-12-GW/p/COLOR-3298152',
      '',
-     {}]
+     {}],
+    ['Bruendl Sports',
+     'https://www.bruendl.at/en/products-brands/products/equipment/atomic-redster-x9-s-rvsk-s-x-12-gw',
+     'script',
+     {'type': 'application/ld+json'}]
 ]
 
 # Fetch prices
@@ -128,3 +148,6 @@ if isinstance(prices, list):
         print(f"{shop:<{max_shop_name_length}}: € {price:.2f}")
 else:
     print(prices)
+
+# TODO:
+# decathlon - no revoshock models available
