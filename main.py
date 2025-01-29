@@ -78,10 +78,8 @@ def scrape_price(urls):
                                 break  # Stop once we find the price
                         except json.JSONDecodeError:
                             continue  # Skip if there is any issue with parsing the JSON
-
-                    # json_data = json.loads(price_element.string)
-                    # print('json_data\n', json_data)
-                    # price_numeric = float(json_data['offers']['price'])
+                elif tag_name == 'meta':  # Handling meta tag
+                    price_numeric = float(price_element[0]['content'])
                 else:
                     price_text = price_element[0].get_text(strip=True)
                     price_numeric = float(re.sub(r'[^\d.,]', '', price_text).replace(',', '.'))
@@ -121,14 +119,18 @@ urls_x9 = [
      'https://www.sport-ueberbacher.at/redster_x9s_revoshock_s_x_12_gw_2024_25-3616.htm',
      'span',
      {'class': 'price_ausgabe'}],
-    ['Hervis',
-     'https://www.hervis.at/shop/Ausr%C3%BCstung/Ski/Ski-Alpin/Carvingski-Erwachsene/Atomic/REDSTER-X9S-REVOSHOCK-S-%2B-X-12-GW/p/COLOR-3298152',
-     '',
-     {}],
+    # ['Hervis',
+    #  'https://www.hervis.at/shop/Ausr%C3%BCstung/Ski/Ski-Alpin/Carvingski-Erwachsene/Atomic/REDSTER-X9S-REVOSHOCK-S-%2B-X-12-GW/p/COLOR-3298152',
+    #  '',
+    #  {}],
     ['Bruendl Sports',
      'https://www.bruendl.at/en/products-brands/products/equipment/atomic-redster-x9-s-rvsk-s-x-12-gw',
      'script',
-     {'type': 'application/ld+json'}]
+     {'type': 'application/ld+json'}],
+    ['SportOkay',
+     'https://www.sportokay.com/at_de/atomic-redster-x9s-revoshock-s-x-12-gw-skiset-2024.html',
+     'meta',
+     {'itemprop': 'price'}]
 ]
 
 urls_s9 = [
@@ -159,7 +161,11 @@ urls_s9 = [
     ['Bruendl Sports',
      'https://www.bruendl.at/de/produkte-marken/produkte/ausruestung/atomic-redster-s9-revo-x-12-gw',
      'script',
-     {'type': 'application/ld+json'}]
+     {'type': 'application/ld+json'}],
+    ['SportOkay',
+     'https://www.sportokay.com/at_de/atomic-redster-s9-revoshock-s-x-12-gw-skiset-2024.html',
+     'meta',
+     {'itemprop': 'price'}]
 ]
 
 # Fetch prices X9
@@ -186,3 +192,4 @@ else:
 # decathlon - no revoshock models available
 # sport 2000 - 1260€
 # https://sport2000.at/de/atomic-redster-x9s-rvsk-s-+-x-12-gw/p-M0887445367062?delivery-method=10001&payment-mode=online&vendor=227
+#
