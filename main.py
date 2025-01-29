@@ -4,15 +4,9 @@ import re  # Import regex module for cleaning price strings
 import json
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.webdriver import WebDriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
-from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
 
 
 def scrape_hervis_price(url):
@@ -137,13 +131,52 @@ urls_x9 = [
      {'type': 'application/ld+json'}]
 ]
 
-# Fetch prices
-prices = scrape_price(urls_x9)
+urls_s9 = [
+    ['Gigasport',
+     'https://www.gigasport.at/atomic-raceski-redster-s9-rvsk-s-x-12-gw-rot-7661693.html',
+     'span',
+     {'id': 'tprice'}],
+    ['Sport Robl',
+     'https://www.sport-robl.at/de/ski-sets/atomic/atomic-redster-s9-revoshock-s-laengenwahl-atomic-x-12-gw-mod-2023-2024.html',
+     'span',
+     {'itemprop': 'price'}],
+    ['Intersport',
+     'https://www.intersport.at/p/atomic-redster-s9-revoshock-s-afi-race-alpinski-iat.atomic.aass03410.000.html',
+     'script',
+     {'id': 'schema-org-pdp', 'type': 'application/ld+json'}],
+    ['Sport Bittl',
+     'https://www.sport-bittl.com/de/atomic-redster-s9-revoshock-s-24-25-ski-inkl-bindung::231323.html',
+     'div',
+     {'class': 'set-configurator-widget__infos__price--current'}],
+    # ['Sport Ueberbacher', # NO S9
+    #  '',
+    #  'span',
+    #  {'class': 'price_ausgabe'}],
+    ['Hervis',
+     'https://www.hervis.at/shop/Ausr%C3%BCstung/Ski/Ski-Alpin/Carvingski-Erwachsene/Atomic/Redster-S9-Revoshock-S/p/COLOR-3391677',
+     '',
+     {}],
+    ['Bruendl Sports',
+     'https://www.bruendl.at/de/produkte-marken/produkte/ausruestung/atomic-redster-s9-revo-x-12-gw',
+     'script',
+     {'type': 'application/ld+json'}]
+]
 
+# Fetch prices X9
+prices = scrape_price(urls_x9)
 if isinstance(prices, list):
     max_shop_name_length = max(len(shop) for shop, _ in prices)
+    print('######## Atomic X9 ########')
+    for shop, price in prices:
+        print(f"{shop:<{max_shop_name_length}}: € {price:.2f}")
+else:
+    print(prices)
 
-    print('##### Atomic X9 #####')
+# Fetch prices S9
+prices = scrape_price(urls_s9)
+if isinstance(prices, list):
+    max_shop_name_length = max(len(shop) for shop, _ in prices)
+    print('\n######## Atomic S9 ########')
     for shop, price in prices:
         print(f"{shop:<{max_shop_name_length}}: € {price:.2f}")
 else:
@@ -151,3 +184,5 @@ else:
 
 # TODO:
 # decathlon - no revoshock models available
+# sport 2000 - 1260€
+# https://sport2000.at/de/atomic-redster-x9s-rvsk-s-+-x-12-gw/p-M0887445367062?delivery-method=10001&payment-mode=online&vendor=227
