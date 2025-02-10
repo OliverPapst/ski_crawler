@@ -8,11 +8,88 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
+urls_x9 = [
+    ['Gigasport',
+     'https://www.gigasport.at/atomic-pistenski-set-redster-x9s-revoshock-s-x-12-gw-tuerkis-7582846.html',
+     'span',
+     {'id': 'tprice'}],
+    ['Sport Robl',
+     'https://www.sport-robl.at/de/ski-sets/atomic/atomic-redster-x9s-revoshock-s-laengenwahl-atomic-x-12-gw-mod-2023-2024.html',
+     'span',
+     {'itemprop': 'price'}],
+    ['Intersport',
+     'https://www.intersport.at/p/atomic-redster-x9s-revoshock-s-race-alpinski-iat.atomic.aass03266.000.html',
+     'script',
+     {'id': 'schema-org-pdp', 'type': 'application/ld+json'}],
+    ['Sport Bittl',
+     'https://www.sport-bittl.com/de/alpin-ski-vormontiert/?part=186&action=asp&pid=46-186-224138',
+     'div',
+     {'class': 'set-configurator-widget__infos__price--current'}],
+    ['Sport Ueberbacher',
+     'https://www.sport-ueberbacher.at/redster_x9s_revoshock_s_x_12_gw_2024_25-3616.htm',
+     'span',
+     {'class': 'price_ausgabe'}],
+    ['Hervis',
+     'https://www.hervis.at/shop/Ausr%C3%BCstung/Ski/Ski-Alpin/Carvingski-Erwachsene/Atomic/REDSTER-X9S-REVOSHOCK-S-%2B-X-12-GW/p/COLOR-3298152',
+     '',
+     {}],
+    ['Bruendl Sports',
+     'https://www.bruendl.at/en/products-brands/products/equipment/atomic-redster-x9-s-rvsk-s-x-12-gw',
+     'script',
+     {'type': 'application/ld+json'}],
+    ['SportOkay',
+     'https://www.sportokay.com/at_de/atomic-redster-x9s-revoshock-s-x-12-gw-skiset-2024.html',
+     'meta',
+     {'itemprop': 'price'}]
+]
+# Fetch prices X9
+# prices = scrape_price(urls_x9)
+# print('######## Atomic X9 ########')
+# print_prices(prices)
+
+urls_s9 = [
+    ['Gigasport',
+     'https://www.gigasport.at/atomic-raceski-redster-s9-rvsk-s-x-12-gw-rot-7661693.html',
+     'span',
+     {'id': 'tprice'}],
+    ['Sport Robl S9 23/24',
+     'https://www.sport-robl.at/de/ski-sets/atomic/atomic-redster-s9-revoshock-s-laengenwahl-atomic-x-12-gw-mod-2023-2024.html',
+     'span',
+     {'itemprop': 'price'}],
+    ['Sport Robl S9 24/25',
+     'https://www.sport-robl.at/de/ski-sets/atomic/atomic-redster-s9-revoshock-s-laengenwahl-atomic-x-12-gw-re-mod-2024-2025.html',
+     'span',
+     {'itemprop': 'price'}],
+    ['Intersport',
+     'https://www.intersport.at/p/atomic-redster-s9-revoshock-s-afi-race-alpinski-iat.atomic.aass03410.000.html',
+     'script',
+     {'id': 'schema-org-pdp', 'type': 'application/ld+json'}],
+    ['Sport Bittl',
+     'https://www.sport-bittl.com/de/atomic-redster-s9-revoshock-s-24-25-ski-inkl-bindung::231323.html',
+     'div',
+     {'class': 'set-configurator-widget__infos__price--current'}],
+    # ['Sport Ueberbacher', # NO S9
+    #  '',
+    #  'span',
+    #  {'class': 'price_ausgabe'}],
+    ['Hervis',
+     'https://www.hervis.at/shop/Ausr%C3%BCstung/Ski/Ski-Alpin/Carvingski-Erwachsene/Atomic/Redster-S9-Revoshock-S/p/COLOR-3391677',
+     '',
+     {}],
+    ['Bruendl Sports',
+     'https://www.bruendl.at/de/produkte-marken/produkte/ausruestung/atomic-redster-s9-revo-x-12-gw',
+     'script',
+     {'type': 'application/ld+json'}],
+    ['SportOkay',
+     'https://www.sportokay.com/at_de/atomic-redster-s9-revoshock-s-x-12-gw-skiset-2024.html',
+     'meta',
+     {'itemprop': 'price'}]
+]
 
 def scrape_hervis_price(url):
     """Fetch price from Hervis using Selenium (since it blocks requests)"""
+    driver = uc.Chrome()
     try:
-        driver = uc.Chrome()
         driver.get(url)
         # Start measuring the time for loading
         start_time = time.time()
@@ -60,7 +137,6 @@ def scrape_price(urls):
             # Fetch price with requests + BeautifulSoup for other shops
             response = requests.get(url)
             response.raise_for_status()
-
             soup = BeautifulSoup(response.text, 'html.parser')
             # price_element = soup.find(tag_name, attributes)
             price_element = soup.find_all(tag_name, attributes)
@@ -97,99 +173,20 @@ def scrape_price(urls):
     return prices
 
 
-# Updated input list with shop names
-urls_x9 = [
-    ['Gigasport',
-     'https://www.gigasport.at/atomic-pistenski-set-redster-x9s-revoshock-s-x-12-gw-tuerkis-7582846.html',
-     'span',
-     {'id': 'tprice'}],
-    ['Sport Robl',
-     'https://www.sport-robl.at/de/ski-sets/atomic/atomic-redster-x9s-revoshock-s-laengenwahl-atomic-x-12-gw-mod-2023-2024.html',
-     'span',
-     {'itemprop': 'price'}],
-    ['Intersport',
-     'https://www.intersport.at/p/atomic-redster-x9s-revoshock-s-race-alpinski-iat.atomic.aass03266.000.html',
-     'script',
-     {'id': 'schema-org-pdp', 'type': 'application/ld+json'}],
-    ['Sport Bittl',
-     'https://www.sport-bittl.com/de/alpin-ski-vormontiert/?part=186&action=asp&pid=46-186-224138',
-     'div',
-     {'class': 'set-configurator-widget__infos__price--current'}],
-    ['Sport Ueberbacher',
-     'https://www.sport-ueberbacher.at/redster_x9s_revoshock_s_x_12_gw_2024_25-3616.htm',
-     'span',
-     {'class': 'price_ausgabe'}],
-    # ['Hervis',
-    #  'https://www.hervis.at/shop/Ausr%C3%BCstung/Ski/Ski-Alpin/Carvingski-Erwachsene/Atomic/REDSTER-X9S-REVOSHOCK-S-%2B-X-12-GW/p/COLOR-3298152',
-    #  '',
-    #  {}],
-    ['Bruendl Sports',
-     'https://www.bruendl.at/en/products-brands/products/equipment/atomic-redster-x9-s-rvsk-s-x-12-gw',
-     'script',
-     {'type': 'application/ld+json'}],
-    ['SportOkay',
-     'https://www.sportokay.com/at_de/atomic-redster-x9s-revoshock-s-x-12-gw-skiset-2024.html',
-     'meta',
-     {'itemprop': 'price'}]
-]
-
-urls_s9 = [
-    ['Gigasport',
-     'https://www.gigasport.at/atomic-raceski-redster-s9-rvsk-s-x-12-gw-rot-7661693.html',
-     'span',
-     {'id': 'tprice'}],
-    ['Sport Robl',
-     'https://www.sport-robl.at/de/ski-sets/atomic/atomic-redster-s9-revoshock-s-laengenwahl-atomic-x-12-gw-mod-2023-2024.html',
-     'span',
-     {'itemprop': 'price'}],
-    ['Intersport',
-     'https://www.intersport.at/p/atomic-redster-s9-revoshock-s-afi-race-alpinski-iat.atomic.aass03410.000.html',
-     'script',
-     {'id': 'schema-org-pdp', 'type': 'application/ld+json'}],
-    ['Sport Bittl',
-     'https://www.sport-bittl.com/de/atomic-redster-s9-revoshock-s-24-25-ski-inkl-bindung::231323.html',
-     'div',
-     {'class': 'set-configurator-widget__infos__price--current'}],
-    # ['Sport Ueberbacher', # NO S9
-    #  '',
-    #  'span',
-    #  {'class': 'price_ausgabe'}],
-    ['Hervis',
-     'https://www.hervis.at/shop/Ausr%C3%BCstung/Ski/Ski-Alpin/Carvingski-Erwachsene/Atomic/Redster-S9-Revoshock-S/p/COLOR-3391677',
-     '',
-     {}],
-    ['Bruendl Sports',
-     'https://www.bruendl.at/de/produkte-marken/produkte/ausruestung/atomic-redster-s9-revo-x-12-gw',
-     'script',
-     {'type': 'application/ld+json'}],
-    ['SportOkay',
-     'https://www.sportokay.com/at_de/atomic-redster-s9-revoshock-s-x-12-gw-skiset-2024.html',
-     'meta',
-     {'itemprop': 'price'}]
-]
-
-# Fetch prices X9
-prices = scrape_price(urls_x9)
-if isinstance(prices, list):
-    max_shop_name_length = max(len(shop) for shop, _ in prices)
-    print('######## Atomic X9 ########')
-    for shop, price in prices:
-        print(f"{shop:<{max_shop_name_length}}: € {price:.2f}")
-else:
-    print(prices)
+def print_prices(prices):
+    if isinstance(prices, list):
+        max_shop_name_length = max(len(shop) for shop, _ in prices)
+        for shop, price in prices:
+            print(f"{shop:<{max_shop_name_length}}: € {price:.2f}")
+    else:
+        print(prices)
 
 # Fetch prices S9
 prices = scrape_price(urls_s9)
-if isinstance(prices, list):
-    max_shop_name_length = max(len(shop) for shop, _ in prices)
-    print('\n######## Atomic S9 ########')
-    for shop, price in prices:
-        print(f"{shop:<{max_shop_name_length}}: € {price:.2f}")
-else:
-    print(prices)
+print('######## Atomic S9 ########')
+print_prices(prices)
 
 # TODO:
 # decathlon - no revoshock models available
 # sport 2000 - 1260€
 # https://sport2000.at/de/atomic-redster-x9s-rvsk-s-+-x-12-gw/p-M0887445367062?delivery-method=10001&payment-mode=online&vendor=227
-#
